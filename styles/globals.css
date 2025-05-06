@@ -1,0 +1,138 @@
+@import './index.css';
+
+/* Base app styling */
+html, body, #__next {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Common styles for all devices */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Modern form styling */
+input, select, textarea {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Card styling */
+.card {
+  @apply shadow-card rounded-xl transition-shadow hover:shadow-lg;
+}
+
+/* Button styling */
+.btn {
+  @apply shadow-button transition-all;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Mobile app styling */
+@media (max-width: 768px) {
+  body {
+    overscroll-behavior: none; /* Prevent browser pull-to-refresh on mobile */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+    user-select: none; /* Prevent text selection */
+    touch-action: manipulation; /* Optimize for touch */
+  }
+
+  /* Allow text selection in inputs, selects, and text areas */
+  input, select, textarea {
+    user-select: auto;
+  }
+
+  /* App-like animations */
+  .page-transition-enter {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  
+  .page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms, transform 200ms;
+  }
+  
+  .page-transition-exit {
+    opacity: 1;
+  }
+  
+  .page-transition-exit-active {
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+
+  /* Improve touch targets for mobile */
+  button, a, input, select, textarea {
+    min-height: 44px; /* Apple's recommended minimum touch target size */
+  }
+
+  /* Remove blue highlight when buttons are tapped on mobile */
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Bottom navigation styles */
+  .btm-nav {
+    height: 64px;
+    padding-bottom: env(safe-area-inset-bottom); /* Support for iPhone notch */
+  }
+  
+  /* Status bar area for mobile */
+  .mobile-status-area {
+    padding-top: env(safe-area-inset-top);
+    background-color: transparent;
+  }
+  
+  /* Mobile header with full bleed */
+  .mobile-header {
+    width: 100%;
+    height: 56px;
+    padding-top: env(safe-area-inset-top);
+    @apply shadow-sm;
+  }
+}
+
+/* Form styles */
+.form-container {
+  @apply p-4 rounded-xl bg-base-100 shadow-card;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block mb-2 text-sm font-medium text-base-content;
+}
+
+.form-control {
+  @apply w-full px-3 py-2 bg-base-200 border border-base-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all;
+}
+
+/* Loading indicator */
+.loading-overlay {
+  @apply fixed inset-0 flex items-center justify-center bg-base-100 bg-opacity-75 z-50;
+}
+
+/* Toast notifications */
+.toast {
+  @apply fixed bottom-0 right-0 m-4 p-4 rounded-lg shadow-lg;
+}
+
+/* List items */
+.list-item {
+  @apply p-4 border-b border-base-200 last:border-b-0;
+}
+
+/* Global styles can be added here */ 
