@@ -3,11 +3,14 @@ import MobileLayout from "@/layout/mobile";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import type { NextPageWithLayout } from "./_app";
+import HomeLayout from "@/layout/home";
 
 const DraftsPage: NextPageWithLayout = () => {
     const router = useRouter();
     const [drafts, setDrafts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    // Determine if we're on mobile
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     useEffect(() => {
         // Simulate fetching saved form drafts
@@ -48,6 +51,89 @@ const DraftsPage: NextPageWithLayout = () => {
         router.push(`/forms/${draftId}`);
     };
 
+    const content = (
+        <>
+            <div className={isMobile ? "mb-4" : "mb-6 flex justify-between items-center"}>
+                <h1 className={isMobile ? "text-xl font-bold mb-1" : "text-2xl font-bold"}>Saved Drafts</h1>
+                {!isMobile && drafts.length > 0 && (
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => router.push('/forms')}
+                    >
+                        Browse Forms
+                    </button>
+                )}
+            </div>
+
+            {loading ? (
+                <div className="flex justify-center my-6">
+                    <span className={isMobile ? "loading loading-spinner loading-md" : "loading loading-spinner loading-lg"}></span>
+                </div>
+            ) : drafts.length > 0 ? (
+                <div className={isMobile ? "space-y-3" : "space-y-4"}>
+                    {drafts.map((draft) => (
+                        <div
+                            key={draft.id}
+                            className={isMobile
+                                ? "card bg-white border border-base-200 hover:bg-base-100 transition-colors cursor-pointer"
+                                : "card bg-base-100 shadow-xl hover:shadow-2xl transition-all cursor-pointer"}
+                            onClick={() => handleContinueDraft(draft.id)}
+                        >
+                            <div className={isMobile ? "card-body" : "card-body p-4"}>
+                                <div className="flex justify-between items-start">
+                                    <div className="flex-1">
+                                        <h2 className={isMobile ? "card-title text-lg" : "card-title"}>{draft.title}</h2>
+                                        <div className={isMobile ? "text-sm opacity-70" : "text-base-content/70"}>
+                                            Last edited: {formatDate(draft.lastSaved)}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <button
+                                            className={isMobile ? "btn btn-sm btn-primary" : "btn btn-primary"}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleContinueDraft(draft.id);
+                                            }}
+                                        >
+                                            Continue
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3 w-full">
+                                    <div className="w-full bg-base-200 rounded-full h-2">
+                                        <div
+                                            className="bg-primary h-2 rounded-full"
+                                            style={{ width: `${draft.progress}%` }}
+                                        ></div>
+                                    </div>
+                                    <div className="text-xs mt-1 text-right">{draft.progress}% complete</div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className={isMobile
+                    ? "text-center py-6 bg-white"
+                    : "text-center p-10 bg-base-200 rounded-lg"}>
+                    <div className={isMobile ? "text-4xl mb-2" : "text-5xl mb-3"}>📝</div>
+                    <h3 className={isMobile ? "text-lg font-semibold mb-2" : "text-xl font-semibold mb-2"}>No Drafts Found</h3>
+                    <p className={isMobile ? "text-base-content/70 text-sm" : "text-base-content/70 mb-4"}>
+                        Start filling out a form and it will automatically save as you go.
+                    </p>
+                    <button
+                        className={isMobile ? "btn btn-primary mt-3" : "btn btn-primary mt-4"}
+                        onClick={() => router.push('/forms')}
+                    >
+                        Browse Forms
+                    </button>
+                </div>
+            )}
+        </>
+    );
+
     return (
         <>
             <Head>
@@ -55,64 +141,22 @@ const DraftsPage: NextPageWithLayout = () => {
                 <meta name="description" content="Continue your saved form drafts" />
             </Head>
 
-            <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4">Saved Drafts</h1>
-
-                {loading ? (
-                    <div className="flex justify-center my-8">
-                        <span className="loading loading-spinner loading-lg text-primary"></span>
+            {isMobile
+                ? <div className="px-4 py-2 mt-14">{content}</div>
+                : (
+                    <div className="flex flex-col items-center justify-center pt-20">
+                        <div className="prose w-full max-w-full sm:w-[80%] sm:max-w-4xl">
+                            {content}
+                        </div>
                     </div>
-                ) : drafts.length > 0 ? (
-                    <div className="space-y-4">
-                        {drafts.map((draft) => (
-                            <div
-                                key={draft.id}
-                                className="card bg-base-100 hover:bg-base-200 transition-colors cursor-pointer"
-                                onClick={() => handleContinueDraft(draft.id)}
-                            >
-                                <div className="card-body p-4">
-                                    <h2 className="card-title text-lg">{draft.title}</h2>
-                                    <div className="text-sm opacity-70">Last edited: {formatDate(draft.lastSaved)}</div>
-
-                                    <div className="mt-2">
-                                        <div className="w-full bg-base-300 rounded-full h-2.5">
-                                            <div
-                                                className="bg-primary h-2.5 rounded-full"
-                                                style={{ width: `${draft.progress}%` }}
-                                            ></div>
-                                        </div>
-                                        <div className="text-xs mt-1 text-right">{draft.progress}% complete</div>
-                                    </div>
-
-                                    <div className="card-actions justify-end mt-2">
-                                        <button className="btn btn-sm btn-primary">Continue</button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-8">
-                        <div className="text-5xl mb-3">📝</div>
-                        <h3 className="text-xl font-semibold mb-2">No Drafts Found</h3>
-                        <p className="text-base-content/70">
-                            Start filling out a form and it will automatically save as you go.
-                        </p>
-                        <button
-                            className="btn btn-primary mt-4"
-                            onClick={() => router.push('/forms')}
-                        >
-                            Browse Forms
-                        </button>
-                    </div>
-                )}
-            </div>
+                )
+            }
         </>
     );
 };
 
 DraftsPage.getLayout = function getLayout(page: ReactElement) {
-    return <MobileLayout>{page}</MobileLayout>;
+    return <HomeLayout>{page}</HomeLayout>;
 };
 
 export default DraftsPage; 

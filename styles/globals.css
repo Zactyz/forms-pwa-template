@@ -1,10 +1,20 @@
 @import './index.css';
 
+:root {
+  --isw-blue: #1E90FF; /* Define the ISW blue color variable for use throughout the app */
+}
+
 /* Base app styling */
 html, body, #__next {
   height: 100%;
   padding: 0;
   margin: 0;
+  background-color: inherit;
+}
+
+/* Debug class to help identify applied styles */
+.debug-bg {
+  outline: 2px solid red !important;
 }
 
 /* Common styles for all devices */
@@ -31,6 +41,11 @@ input, select, textarea {
 /* Button styling */
 .btn {
   @apply shadow-button transition-all;
+}
+
+/* Ensure light text on primary and other colored buttons */
+.btn-primary, .btn-secondary, .btn-accent, .btn-info, .btn-success, .btn-warning, .btn-error {
+  @apply text-white;
 }
 
 .btn:active {
@@ -82,16 +97,15 @@ input, select, textarea {
     -webkit-tap-highlight-color: transparent;
   }
   
-  /* Bottom navigation styles */
-  .btm-nav {
-    height: 64px;
-    padding-bottom: env(safe-area-inset-bottom); /* Support for iPhone notch */
-  }
-  
-  /* Status bar area for mobile */
+  /* Status bar area for mobile - extend above dynamic island */
   .mobile-status-area {
-    padding-top: env(safe-area-inset-top);
-    background-color: transparent;
+    height: env(safe-area-inset-top);
+    min-height: 0;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
   }
   
   /* Mobile header with full bleed */
@@ -100,6 +114,55 @@ input, select, textarea {
     height: 56px;
     padding-top: env(safe-area-inset-top);
     @apply shadow-sm;
+  }
+
+  /* PWA standalone mode with theme background */
+  @media (display-mode: standalone) {
+    body, html, #__next {
+      background-color: var(--b1) !important;
+    }
+    
+    .mobile-status-area {
+      background-color: var(--b1) !important;
+    }
+  }
+  
+  /* iOS standalone mode detection */
+  @supports (-webkit-touch-callout: none) {
+    html.standalone body, 
+    html.standalone #__next {
+      background-color: var(--b1) !important;
+    }
+    
+    html.standalone .mobile-status-area {
+      background-color: var(--b1) !important;
+    }
+  }
+  
+  /* Ensure that the content area gets the right background in the scrollable area */
+  .bg-white {
+    background-color: var(--b1) !important;
+  }
+
+  /* Add rounded corners to the main content in mobile view */
+  .rounded-t-3xl {
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+  }
+
+  /* List items */
+  .list-item {
+    @apply py-2 px-3;
+  }
+  
+  /* Card body */
+  .card-body {
+    @apply py-3 px-4;
+  }
+  
+  /* Card title */
+  .card-title {
+    @apply text-lg mb-1;
   }
 }
 
@@ -132,7 +195,56 @@ input, select, textarea {
 
 /* List items */
 .list-item {
-  @apply p-4 border-b border-base-200 last:border-b-0;
+  @apply py-2 px-3 border-b border-base-200 last:border-b-0;
+}
+
+.card-body {
+  @apply py-3 px-4;
+}
+
+/* Dark mode specific styles */
+[data-theme="iswDark"] {
+  --b1: #0F172A;
+  --b2: #1E293B;
+  --b3: #334155;
+  --base-content: #F1F5F9;
+}
+
+[data-theme="iswDark"] .bg-white {
+  background-color: var(--b1) !important;
+}
+
+[data-theme="iswDark"] .mobile-header {
+  background-color: var(--b1) !important;
+}
+
+[data-theme="iswDark"] .mobile-status-area {
+  background-color: var(--b1) !important;
+}
+
+/* Enhanced contrast for dark mode */
+[data-theme="iswDark"] .card {
+  background-color: var(--b2) !important;
+  border: 1px solid var(--b3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="iswDark"] .form-control {
+  background-color: var(--b2) !important;
+  border-color: var(--b3);
+}
+
+[data-theme="iswDark"] .btn {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="iswDark"] .list-item {
+  border-color: var(--b3);
+}
+
+[data-theme="iswDark"] .mobile-nav-bar {
+  background-color: var(--b2) !important;
+  border-top: 1px solid var(--b3);
 }
 
 /* Global styles can be added here */ 

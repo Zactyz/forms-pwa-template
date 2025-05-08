@@ -1,67 +1,56 @@
-import { LinkedInIcon, GithubIcon, SoundcloudIcon } from "@/lib/icons";
 import Link from "next/link";
 
 const Footer = () => {
-  return (
-    <>
-      <footer className="footer p-10 bg-neutral text-neutral-content">
-        <aside className="order-last md:order-first">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="50"
-            height="50"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3" />
-            <circle cx="12" cy="10" r="3" />
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          <p className="text-white font-semibold">Thibault MARTIN</p>
-          <p className="text-white">Développeur Web Fullstack</p>
-          <p className="currentColor font-light">
-            {`© Created by Thibault MARTIN | All right reserved | 2024 / ${new Date().getFullYear().toString()}`}
-          </p>
-        </aside>
-        <nav>
-          <header className="footer-title opacity-100">Social</header>
-          <div className="grid grid-flow-col gap-4">
-            <Link
-              className={`
-              `}
-              aria-label="Linkedin-Tib0"
-              target="blank"
-              href="https://www.linkedin.com/in/thibault-martin-1b934083/"
-            >
-              <LinkedInIcon />
-            </Link>
-            <Link
-              className={`
-              `}
-              aria-label="Github-Tib0"
-              target="blank"
-              href="https://github.com/tib0"
-            >
-              <GithubIcon />
-            </Link>
-            <Link
-              className={`
-              `}
-              aria-label="Soundcloud-Tib0"
-              target="blank"
-              href="https://soundcloud.com/rockinpef"
-            >
-              <SoundcloudIcon />
-            </Link>
-          </div>
-        </nav>
-      </footer>
-    </>
-  );
+    const currentYear = new Date().getFullYear();
+
+    return (
+        <footer className="footer p-10 bg-base-200 text-base-content border-t border-base-300">
+            <div className="flex flex-col">
+                <div className="flex items-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-primary mr-2"
+                    >
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-xl font-semibold">ISW Forms</span>
+                </div>
+                <p className="mt-2">A powerful mobile form solution for data collection</p>
+                <p className="text-xs opacity-70 mt-2">
+                    © {currentYear} ISW Forms. All rights reserved.
+                </p>
+            </div>
+
+            <div>
+                <span className="footer-title">Product</span>
+                <Link href="/forms" className="link link-hover">Forms</Link>
+                <Link href="/drafts" className="link link-hover">Drafts</Link>
+                <Link href="/assigned" className="link link-hover">Assigned</Link>
+            </div>
+
+            <div>
+                <span className="footer-title">Admin</span>
+                <Link href="/admin/form-builder" className="link link-hover">Form Builder</Link>
+                <Link href="/admin/form-responses" className="link link-hover">Form Responses</Link>
+                <Link href="/admin/settings" className="link link-hover">Settings</Link>
+            </div>
+
+            <div>
+                <span className="footer-title">Company</span>
+                <Link href="/about" className="link link-hover">About</Link>
+                <a href="#" className="link link-hover">Privacy Policy</a>
+                <a href="#" className="link link-hover">Terms of Service</a>
+            </div>
+        </footer>
+    );
 };
 
 export default Footer;

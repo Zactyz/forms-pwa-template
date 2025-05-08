@@ -5,8 +5,11 @@ import usePersistentStorageValue from "@/hooks/usePersistentStorageValue";
 import useThemeDetect from "@/hooks/useThemeDetect";
 import { useSession, signOut } from "next-auth/react";
 import { createError, ErrorType } from "@/lib/errorHandler";
+import { useRouter } from "next/router";
+import Image from "next/image";
 
 const Header = ({ }: any) => {
+    const router = useRouter();
     const { data: session, status } = useSession();
     const isAuthenticated = status === "authenticated";
     const isDarkThemeByDefault = useThemeDetect();
@@ -33,12 +36,26 @@ const Header = ({ }: any) => {
         }
     };
 
+    // Check if a path is active
+    const isActive = (path: string) => {
+        if (path === '/') {
+            return router.pathname === path;
+        }
+        return router.pathname.startsWith(path);
+    };
+
+    // Get nav link class based on active state
+    const getLinkClass = (path: string) => {
+        const baseClass = "mx-2 font-medium transition-colors";
+        return `${baseClass} ${isActive(path) ? 'text-primary font-semibold' : 'hover:text-primary'}`;
+    };
+
     const menuLink = (src: string) => (
         <>
             <li key={"homeLink" + src}>
                 <Link
                     key="homeLink"
-                    className="mx-2 font-medium hover:text-primary transition-colors"
+                    className={getLinkClass('/')}
                     href="/"
                     scroll={false}
                 >
@@ -48,7 +65,7 @@ const Header = ({ }: any) => {
             <li key={"formsLink" + src}>
                 <Link
                     key="formsLink"
-                    className="mx-2 font-medium hover:text-primary transition-colors"
+                    className={getLinkClass('/forms')}
                     href="/forms"
                 >
                     Forms
@@ -57,7 +74,7 @@ const Header = ({ }: any) => {
             <li key={"draftsLink" + src}>
                 <Link
                     key="draftsLink"
-                    className="mx-2 font-medium hover:text-primary transition-colors"
+                    className={getLinkClass('/drafts')}
                     href="/drafts"
                 >
                     Drafts
@@ -66,7 +83,7 @@ const Header = ({ }: any) => {
             <li key={"assignedLink" + src}>
                 <Link
                     key="assignedLink"
-                    className="mx-2 font-medium hover:text-primary transition-colors"
+                    className={getLinkClass('/assigned')}
                     href="/assigned"
                 >
                     Assigned
@@ -74,16 +91,31 @@ const Header = ({ }: any) => {
             </li>
             <li key={"adminLink" + src}>
                 <details className="dropdown">
-                    <summary className="mx-2 font-medium hover:text-primary transition-colors">Admin</summary>
+                    <summary className={`mx-2 font-medium transition-colors ${router.pathname.startsWith('/admin') ? 'text-primary font-semibold' : 'hover:text-primary'}`}>Admin</summary>
                     <ul className="p-2 shadow-card menu dropdown-content z-[1] bg-base-100 rounded-xl w-52">
                         <li>
-                            <Link href="/admin/form-builder" className="hover:bg-base-200">Form Builder</Link>
+                            <Link
+                                href="/admin/form-builder"
+                                className={router.pathname === '/admin/form-builder' ? 'bg-base-200 text-primary font-semibold' : 'hover:bg-base-200'}
+                            >
+                                Form Builder
+                            </Link>
                         </li>
                         <li>
-                            <Link href="/admin/form-responses" className="hover:bg-base-200">Form Responses</Link>
+                            <Link
+                                href="/admin/form-responses"
+                                className={router.pathname === '/admin/form-responses' ? 'bg-base-200 text-primary font-semibold' : 'hover:bg-base-200'}
+                            >
+                                Form Responses
+                            </Link>
                         </li>
                         <li>
-                            <Link href="/admin/settings" className="hover:bg-base-200">Settings</Link>
+                            <Link
+                                href="/admin/settings"
+                                className={router.pathname === '/admin/settings' ? 'bg-base-200 text-primary font-semibold' : 'hover:bg-base-200'}
+                            >
+                                Settings
+                            </Link>
                         </li>
                     </ul>
                 </details>
@@ -91,9 +123,7 @@ const Header = ({ }: any) => {
             <li key={"dbLink" + src}>
                 <Link
                     key="dbLink"
-                    className={`
-            mx-2 font-light text-lg
-          `}
+                    className={getLinkClass('/items')}
                     href="/items"
                 >
                     Demo DB
@@ -102,9 +132,7 @@ const Header = ({ }: any) => {
             <li key={"aboutLink" + src}>
                 <Link
                     key="aboutLink"
-                    className={`
-            mx-2 font-light text-lg
-          `}
+                    className={getLinkClass('/about')}
                     href="/about"
                 >
                     About
@@ -115,7 +143,7 @@ const Header = ({ }: any) => {
                     <li key={"profileLink" + src}>
                         <Link
                             key="profileLink"
-                            className="mx-2 font-medium hover:text-primary transition-colors"
+                            className={getLinkClass('/profile')}
                             href="/profile"
                         >
                             Profile
@@ -134,7 +162,7 @@ const Header = ({ }: any) => {
                 <li key={"signinLink" + src}>
                     <Link
                         key="signinLink"
-                        className="mx-2 font-medium hover:text-primary transition-colors"
+                        className={getLinkClass('/auth/signin')}
                         href="/auth/signin"
                     >
                         Sign In
@@ -202,8 +230,17 @@ const Header = ({ }: any) => {
                             {menuLink("MOBILE")}
                         </ul>
                     </div>
-                    <Link className="font-black text-2xl text-primary px-3" key="homeBlogLink" href="/">
-                        ISW Forms
+                    <Link href="/" className="flex items-center">
+                        <div className="h-8 w-8 mr-2">
+                            <Image
+                                src="/ISW.ico"
+                                alt="ISW Logo"
+                                width={32}
+                                height={32}
+                                priority
+                            />
+                        </div>
+                        <span className="text-xl font-bold">ISW Forms</span>
                     </Link>
                     {/* MOBILE */}
                     <div className="md:hidden">

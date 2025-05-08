@@ -1,12 +1,45 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
-const MobileNavBar = () => {
+interface MobileNavBarProps {
+    logoColor?: string;
+}
+
+const MobileNavBar = ({ logoColor = "#1E90FF" }: MobileNavBarProps) => {
     const router = useRouter();
     const currentPath = router.pathname;
     const [showAdminMenu, setShowAdminMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    // Detect theme changes
+    useEffect(() => {
+        const detectTheme = () => {
+            const dataTheme = document.documentElement.getAttribute("data-theme") || "light";
+            setIsDarkMode(dataTheme.includes("Dark") || dataTheme.includes("dark"));
+        };
+
+        // Initial detection
+        detectTheme();
+
+        // Set up observer for theme changes
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'data-theme') {
+                    detectTheme();
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+
+        return () => observer.disconnect();
+    }, []);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -45,43 +78,27 @@ const MobileNavBar = () => {
     };
 
     // Function to generate nav item - use button instead of Link if already on that route
-    const NavItem = ({ path, label, icon, onClick }: { path: string; label: string; icon: React.ReactNode; onClick?: () => void }) => {
+    const NavItem = ({ path, label, icon }: { path: string; label: string; icon: React.ReactNode }) => {
         const active = isActive(path);
-        const className = `flex flex-col items-center justify-center px-2 py-1 ${active ? "text-primary" : "text-neutral opacity-80"}`;
+        // Use CSS variable for consistent color
+        const className = `flex flex-col items-center justify-center px-2 ${active ? 'text-[var(--isw-blue)] font-semibold' : isDarkMode ? 'text-white opacity-70' : 'text-neutral opacity-70'}`;
 
-        if ((active && isExactPath(path)) || onClick) {
+        if (active && isExactPath(path)) {
             return (
-                <button className={className} onClick={onClick}>
-                    <div className="mb-1">{icon}</div>
-                    <span className="text-xs font-medium">{label}</span>
+                <button className={className}>
+                    <div className="pt-2 mb-1">{icon}</div>
+                    <span className="text-xs pb-3">{label}</span>
                 </button>
             );
         }
 
         return (
             <Link href={path} className={className}>
-                <div className="mb-1">{icon}</div>
-                <span className="text-xs font-medium">{label}</span>
+                <div className="pt-2 mb-1">{icon}</div>
+                <span className="text-xs pb-3">{label}</span>
             </Link>
         );
     };
-
-    const HomeIcon = (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-        >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-        </svg>
-    );
 
     const FormsIcon = (
         <svg
@@ -89,7 +106,7 @@ const MobileNavBar = () => {
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            stroke={isActive('/forms') ? logoColor : isDarkMode ? "white" : "currentColor"}
             strokeWidth="2"
         >
             <path
@@ -106,7 +123,7 @@ const MobileNavBar = () => {
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            stroke={isActive('/drafts') ? logoColor : isDarkMode ? "white" : "currentColor"}
             strokeWidth="2"
         >
             <path
@@ -123,7 +140,7 @@ const MobileNavBar = () => {
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            stroke={isActive('/assigned') ? logoColor : isDarkMode ? "white" : "currentColor"}
             strokeWidth="2"
         >
             <path
@@ -140,7 +157,7 @@ const MobileNavBar = () => {
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            stroke={isActive('/profile') ? logoColor : isDarkMode ? "white" : "currentColor"}
             strokeWidth="2"
         >
             <path
@@ -151,9 +168,18 @@ const MobileNavBar = () => {
         </svg>
     );
 
+    // Redirect from home page on mobile
+    useEffect(() => {
+        // Only redirect on the client side and if we're on the home page
+        if (typeof window !== 'undefined' && currentPath === '/') {
+            // Redirect to forms page instead of showing home
+            router.replace('/forms');
+        }
+    }, [currentPath, router]);
+
     return (
-        <div className="fixed bottom-0 left-0 right-0 btm-nav z-50 bg-base-100 shadow-nav md:hidden">
-            <NavItem path="/" label="Home" icon={HomeIcon} />
+        <div className={`fixed bottom-0 left-0 right-0 z-50 md:hidden border-t ${isDarkMode ? 'border-gray-700 bg-[var(--b2)]' : 'border-gray-200 bg-white'} flex items-center justify-around w-full`}
+            style={{ height: "70px", paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}>
             <NavItem path="/forms" label="Forms" icon={FormsIcon} />
             <NavItem path="/drafts" label="Drafts" icon={DraftsIcon} />
             <NavItem path="/assigned" label="Assigned" icon={AssignedIcon} />

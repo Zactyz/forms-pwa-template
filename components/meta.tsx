@@ -3,11 +3,11 @@ const Meta = () => {
         <>
             <title>ISW Forms - Mobile Data Collection Solution</title>
             <link rel="manifest" href="/manifest.json" />
-            <link rel="shortcut icon" href="/favicon.ico" />
+            <link rel="shortcut icon" href="/ISW.ico" />
             <meta name="isw-forms" content={`ISW Forms - Mobile Data Collection Solution`} />
             <meta name="keywords" content="Forms, Mobile Forms, Data Collection, ISW, Form Builder" />
             <meta name="description" content="ISW Forms - Powerful mobile form builder and data collection tool" />
-            <meta name="theme-color" content="#0142BC" />
+            <meta name="theme-color" content="#FFFFFF" id="theme-color-meta" />
             <meta name="twitter:card" content="summary" />
             <meta name="twitter:url" content="https://iswforms.com" />
             <meta name="twitter:title" content="ISW Forms" />

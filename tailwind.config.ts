@@ -2,6 +2,8 @@ import type { Config } from "tailwindcss";
 import daisyui from "daisyui";
 import typography from "@tailwindcss/typography";
 
+const ISW_BLUE = "#1E90FF"; // Define the ISW blue color
+
 const config: Config = {
     content: ["./pages/**/*.{js,ts,jsx,tsx,md,mdx}", "./components/**/*.{js,ts,jsx,tsx,md,mdx}"],
     daisyui: {
@@ -10,7 +12,7 @@ const config: Config = {
             {
                 iswLight: {
                     ...require("daisyui/src/theming/themes")["light"],
-                    primary: "#0061D3",
+                    primary: ISW_BLUE,
                     secondary: "#4EACFA",
                     accent: "#4051B5",
                     neutral: "#1E293B",
@@ -33,7 +35,7 @@ const config: Config = {
                 },
                 iswDark: {
                     ...require("daisyui/src/theming/themes")["dark"],
-                    primary: "#3B82F6",
+                    primary: ISW_BLUE,
                     secondary: "#1D4ED8",
                     accent: "#8B5CF6",
                     neutral: "#1E293B",
@@ -42,9 +44,7 @@ const config: Config = {
                     "base-300": "#334155",
                     "base-content": "#F1F5F9",
                     "#main": {
-                        "--gradient-dark": "linear-gradient(to bottom, rgba(15,23,42,1) 0%, rgba(30,41,59,0.8) 100%)",
-                        "--bg-dark": "url(/backgrounds/texture-dark.svg)",
-                        "background": "var(--gradient-dark)",
+                        background: "var(--b1)",
                         "background-repeat": "no-repeat",
                         "background-size": "cover",
                         "min-height": "100vh",
@@ -60,14 +60,14 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                iswBlue: "#0061D3",
+                iswBlue: ISW_BLUE,
                 iswLightBlue: "#4EACFA",
                 iswDarkBlue: "#1D4ED8",
                 iswAccent: "#8B5CF6",
                 iswSuccess: "#10B981",
                 iswWarning: "#F59E0B",
                 iswError: "#EF4444",
-                iswInfo: "#3B82F6"
+                iswInfo: ISW_BLUE
             },
             boxShadow: {
                 'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',

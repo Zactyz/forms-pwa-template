@@ -1,8 +1,8 @@
 {
     "name": "ISW Forms",
     "short_name": "ISW Forms",
-    "description": "A mobile forms app for collecting and managing data",
-    "theme_color": "#0142BC",
+    "description": "Mobile Data Collection Solution",
+    "theme_color": "#FFFFFF",
     "background_color": "#FFFFFF",
     "display": "fullscreen",
     "scope": "/",

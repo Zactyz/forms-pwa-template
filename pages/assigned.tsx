@@ -3,11 +3,14 @@ import MobileLayout from "@/layout/mobile";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import type { NextPageWithLayout } from "./_app";
+import HomeLayout from "@/layout/home";
 
 const AssignedPage: NextPageWithLayout = () => {
     const router = useRouter();
     const [assigned, setAssigned] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    // Determine if we're on mobile
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     useEffect(() => {
         // Simulate fetching assigned forms
@@ -80,13 +83,13 @@ const AssignedPage: NextPageWithLayout = () => {
     const getPriorityBadge = (priority: string) => {
         switch (priority) {
             case 'high':
-                return <span className="badge badge-error">High</span>;
+                return <span className={isMobile ? "badge badge-xs badge-error" : "badge badge-error"}>High</span>;
             case 'medium':
-                return <span className="badge badge-warning">Medium</span>;
+                return <span className={isMobile ? "badge badge-xs badge-warning" : "badge badge-warning"}>Medium</span>;
             case 'low':
-                return <span className="badge badge-info">Low</span>;
+                return <span className={isMobile ? "badge badge-xs badge-info" : "badge badge-info"}>Low</span>;
             default:
-                return <span className="badge badge-info">Normal</span>;
+                return <span className={isMobile ? "badge badge-xs badge-info" : "badge badge-info"}>Normal</span>;
         }
     };
 
@@ -95,6 +98,101 @@ const AssignedPage: NextPageWithLayout = () => {
         router.push(`/forms/${formId}`);
     };
 
+    const content = (
+        <>
+            <div className={isMobile ? "mb-4" : "mb-6 flex justify-between items-center"}>
+                <h1 className={isMobile ? "text-xl font-bold mb-1" : "text-2xl font-bold"}>Assigned Forms</h1>
+                {!isMobile && assigned.length > 0 && (
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => router.push('/forms')}
+                    >
+                        Browse Forms
+                    </button>
+                )}
+            </div>
+
+            {loading ? (
+                <div className="flex justify-center my-6">
+                    <span className={isMobile ? "loading loading-spinner loading-md" : "loading loading-spinner loading-lg"}></span>
+                </div>
+            ) : assigned.length > 0 ? (
+                <div className={isMobile ? "space-y-3" : "space-y-4"}>
+                    {assigned.map((form) => {
+                        const daysRemaining = getDaysRemaining(form.dueDate);
+
+                        return (
+                            <div
+                                key={form.id}
+                                className={isMobile
+                                    ? "card bg-white border border-base-200 hover:bg-base-100 transition-colors"
+                                    : "card bg-base-100 shadow-xl hover:shadow-2xl transition-all"}
+                            >
+                                <div className={isMobile ? "card-body" : "card-body p-4"}>
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h2 className={isMobile ? "card-title text-lg" : "card-title"}>{form.title}</h2>
+                                                {getPriorityBadge(form.priority)}
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4 my-2">
+                                                <div>
+                                                    <div className="opacity-70 text-sm">Location</div>
+                                                    <div>{form.location}</div>
+                                                </div>
+                                                <div>
+                                                    <div className="opacity-70 text-sm">Assigned by</div>
+                                                    <div>{form.assignedBy}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="ml-4">
+                                            <button
+                                                className={`btn btn-primary ${isMobile ? "btn-sm" : ""}`}
+                                                onClick={() => handleStartForm(form.id)}
+                                            >
+                                                Start Form
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className={`mt-2 ${daysRemaining <= 1 ? 'text-error' : ''}`}>
+                                        <div className="flex justify-end text-sm">
+                                            Due: {formatDueDate(form.dueDate)}
+                                            {daysRemaining <= 1 &&
+                                                <span className="ml-2 font-bold">
+                                                    ({daysRemaining === 0 ? 'Today' : 'Tomorrow'})
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className={isMobile
+                    ? "text-center py-6 bg-white"
+                    : "text-center p-10 bg-base-200 rounded-lg"}>
+                    <div className={isMobile ? "text-4xl mb-2" : "text-5xl mb-3"}>✓</div>
+                    <h3 className={isMobile ? "text-lg font-semibold mb-2" : "text-xl font-semibold mb-2"}>No Assigned Forms</h3>
+                    <p className={isMobile ? "text-base-content/70 text-sm" : "text-base-content/70 mb-4"}>
+                        You don&apos;t have any forms assigned to you at this time.
+                    </p>
+                    <button
+                        className={isMobile ? "btn btn-primary mt-3" : "btn btn-primary mt-4"}
+                        onClick={() => router.push('/forms')}
+                    >
+                        Browse Forms
+                    </button>
+                </div>
+            )}
+        </>
+    );
+
     return (
         <>
             <Head>
@@ -102,83 +200,22 @@ const AssignedPage: NextPageWithLayout = () => {
                 <meta name="description" content="Forms that have been assigned to you" />
             </Head>
 
-            <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4">Assigned Forms</h1>
-
-                {loading ? (
-                    <div className="flex justify-center my-8">
-                        <span className="loading loading-spinner loading-lg text-primary"></span>
+            {isMobile
+                ? <div className="px-4 py-2 mt-14">{content}</div>
+                : (
+                    <div className="flex flex-col items-center justify-center pt-20">
+                        <div className="prose w-full max-w-full sm:w-[80%] sm:max-w-4xl">
+                            {content}
+                        </div>
                     </div>
-                ) : assigned.length > 0 ? (
-                    <div className="space-y-4">
-                        {assigned.map((form) => {
-                            const daysRemaining = getDaysRemaining(form.dueDate);
-
-                            return (
-                                <div
-                                    key={form.id}
-                                    className="card bg-base-100 hover:bg-base-200 transition-colors"
-                                >
-                                    <div className="card-body p-4">
-                                        <div className="flex justify-between items-start">
-                                            <h2 className="card-title text-lg">{form.title}</h2>
-                                            {getPriorityBadge(form.priority)}
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-2 my-2 text-sm">
-                                            <div>
-                                                <div className="opacity-70">Location</div>
-                                                <div>{form.location}</div>
-                                            </div>
-                                            <div>
-                                                <div className="opacity-70">Assigned by</div>
-                                                <div>{form.assignedBy}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between items-center mt-2">
-                                            <div className={`text-sm ${daysRemaining <= 1 ? 'text-error' : ''}`}>
-                                                Due: {formatDueDate(form.dueDate)}
-                                                {daysRemaining <= 1 &&
-                                                    <span className="ml-2 font-bold">
-                                                        ({daysRemaining === 0 ? 'Today' : 'Tomorrow'})
-                                                    </span>
-                                                }
-                                            </div>
-                                            <button
-                                                className="btn btn-sm btn-primary"
-                                                onClick={() => handleStartForm(form.id)}
-                                            >
-                                                Start Form
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="text-center py-8">
-                        <div className="text-5xl mb-3">✓</div>
-                        <h3 className="text-xl font-semibold mb-2">No Assigned Forms</h3>
-                        <p className="text-base-content/70">
-                            You don't have any forms assigned to you at this time.
-                        </p>
-                        <button
-                            className="btn btn-primary mt-4"
-                            onClick={() => router.push('/forms')}
-                        >
-                            Browse Forms
-                        </button>
-                    </div>
-                )}
-            </div>
+                )
+            }
         </>
     );
 };
 
 AssignedPage.getLayout = function getLayout(page: ReactElement) {
-    return <MobileLayout>{page}</MobileLayout>;
+    return <HomeLayout>{page}</HomeLayout>;
 };
 
 export default AssignedPage; 
